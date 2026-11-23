@@ -33,7 +33,8 @@ section.tab.on{display:flex;gap:16px}
 .tools{display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
 section.tab.wide .side{display:none}
 .sidetg{margin-left:6px}
-.fsbtn{background:#111;color:#fff;border-color:#111}
+.mapwrap{position:relative}
+.fsbtn{position:absolute;top:8px;right:8px;width:46px;height:46px;font-size:26px;line-height:1;border:2px solid #111;border-radius:10px;background:#111;color:#fff;cursor:pointer;z-index:5;padding:0}
 .fsbtn:hover{background:var(--or);color:#111;border-color:var(--or)}
 @keyframes blinkfs{0%,100%{background:#111;color:#fff;box-shadow:0 0 0 0 rgba(240,124,27,0)}50%{background:var(--or);color:#111;border-color:var(--or);box-shadow:0 0 0 6px rgba(240,124,27,.35)}}
 .fsbtn.blink{animation:blinkfs 1.6s ease-in-out 12}
@@ -158,9 +159,9 @@ svg.map.drag{cursor:grabbing}
         <button class="chip" id="tg-arrows">Moviment relatiu</button>
         <button class="chip" id="tg-reset">Treure la selecció</button>
         <button class="chip sidetg" data-sec="t-map">Amaga el quadre ▸</button>
-        <span class="zoom" data-map="map1"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button><button class="chip fsbtn blink">⛶ Pantalla completa</button></span>
+        <span class="zoom" data-map="map1"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span>
       </div>
-      <div class="mapwrap"><svg class="map" id="map1"></svg></div>
+      <div class="mapwrap"><svg class="map" id="map1"></svg><button class="fsbtn blink" title="Pantalla completa" aria-label="Pantalla completa">⛶</button></div>
       <div class="legend" id="legend1"></div>
     </div>
     <aside class="side" id="side1"></aside>
@@ -187,8 +188,8 @@ svg.map.drag{cursor:grabbing}
     <div class="mapcol">
       <div class="tools"><span style="font-size:17px;font-weight:700">Clica un número del mapa.</span>
         <button class="chip sidetg" data-sec="t-ctx">Amaga el quadre ▸</button>
-        <span class="zoom" data-map="map2"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button><button class="chip fsbtn blink">⛶ Pantalla completa</button></span></div>
-      <div class="mapwrap"><svg class="map" id="map2"></svg></div>
+        <span class="zoom" data-map="map2"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span></div>
+      <div class="mapwrap"><svg class="map" id="map2"></svg><button class="fsbtn blink" title="Pantalla completa" aria-label="Pantalla completa">⛶</button></div>
       <div class="legend" id="legend2"></div>
     </div>
     <aside class="side fitxa" id="side2"></aside>
@@ -504,7 +505,7 @@ document.querySelectorAll('.sidetg').forEach(b=>b.onclick=()=>setSide(b.dataset.
 /* ===================== pantalla completa ===================== */
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',4500);}
 function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
-function updFs(){document.querySelectorAll('.fsbtn').forEach(b=>b.textContent=isFs()?'✕ Surt de pantalla completa':'⛶ Pantalla completa');}
+function updFs(){document.querySelectorAll('.fsbtn').forEach(b=>{b.textContent=isFs()?'✕':'⛶';b.title=isFs()?'Surt de pantalla completa':'Pantalla completa';});}
 document.addEventListener('fullscreenchange',updFs); document.addEventListener('webkitfullscreenchange',updFs);
 document.querySelectorAll('.fsbtn').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.fsbtn').forEach(x=>x.classList.remove('blink'));
