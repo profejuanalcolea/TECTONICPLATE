@@ -18,7 +18,7 @@ header h1 span{color:var(--or)}
 nav.tabs{display:flex;gap:6px;margin-left:auto}
 nav.tabs button{font:inherit;font-size:19px;font-weight:700;border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:7px 18px;border-radius:999px;cursor:pointer}
 nav.tabs button.on{background:var(--ink);color:#fff}
-nav.tabs button:hover:not(.on){background:var(--or-l)}
+nav.tabs button:hover:not(.on):not(.fsbtn){background:var(--or-l)}
 main{flex:1;min-height:0;position:relative}
 section.tab{position:absolute;inset:0;display:none;padding:12px 18px 8px}
 section.tab.on{display:flex;gap:16px}
@@ -34,7 +34,7 @@ section.tab.on{display:flex;gap:16px}
 section.tab.wide .side{display:none}
 .sidetg{margin-left:6px}
 .mapwrap{position:relative}
-.fsbtn{position:absolute;top:8px;right:8px;width:46px;height:46px;font-size:26px;line-height:1;border:2px solid #111;border-radius:10px;background:#111;color:#fff;cursor:pointer;z-index:5;padding:0}
+nav.tabs button.fsbtn{width:46px;padding:0;font-size:24px;line-height:1;background:#111;color:#fff}
 .fsbtn:hover{background:var(--or);color:#111;border-color:var(--or)}
 @keyframes blinkfs{0%,100%{background:#111;color:#fff;box-shadow:0 0 0 0 rgba(240,124,27,0)}50%{background:var(--or);color:#111;border-color:var(--or);box-shadow:0 0 0 6px rgba(240,124,27,.35)}}
 .fsbtn.blink{animation:blinkfs 1.6s ease-in-out 12}
@@ -145,6 +145,7 @@ svg.map.drag{cursor:grabbing}
 <header>
   <h1>Tectònica de <span>plaques</span></h1>
   <nav class="tabs">
+    <button class="fsbtn blink" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
     <button data-tab="t-map" class="on">Mapa</button>
     <button data-tab="t-limits">Límits</button>
     <button data-tab="t-ctx">Contextos tectònics</button>
@@ -161,7 +162,7 @@ svg.map.drag{cursor:grabbing}
         <button class="chip sidetg" data-sec="t-map">Amaga el quadre ▸</button>
         <span class="zoom" data-map="map1"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span>
       </div>
-      <div class="mapwrap"><svg class="map" id="map1"></svg><button class="fsbtn blink" title="Pantalla completa" aria-label="Pantalla completa">⛶</button></div>
+      <div class="mapwrap"><svg class="map" id="map1"></svg></div>
       <div class="legend" id="legend1"></div>
     </div>
     <aside class="side" id="side1"></aside>
@@ -189,7 +190,7 @@ svg.map.drag{cursor:grabbing}
       <div class="tools"><span style="font-size:17px;font-weight:700">Clica un número del mapa.</span>
         <button class="chip sidetg" data-sec="t-ctx">Amaga el quadre ▸</button>
         <span class="zoom" data-map="map2"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span></div>
-      <div class="mapwrap"><svg class="map" id="map2"></svg><button class="fsbtn blink" title="Pantalla completa" aria-label="Pantalla completa">⛶</button></div>
+      <div class="mapwrap"><svg class="map" id="map2"></svg></div>
       <div class="legend" id="legend2"></div>
     </div>
     <aside class="side fitxa" id="side2"></aside>
@@ -518,9 +519,9 @@ document.querySelectorAll('.fsbtn').forEach(b=>b.addEventListener('click',()=>{
 }));
 setTimeout(()=>document.querySelectorAll('.fsbtn').forEach(x=>x.classList.remove('blink')),20000);
 /* ===================== pestanyes ===================== */
-document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.querySelectorAll('nav.tabs button[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function showTab(id){
-  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.tab===id));
+  document.querySelectorAll('nav.tabs button[data-tab]').forEach(x=>x.classList.toggle('on',x.dataset.tab===id));
   document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id===id));
 }
 /* ===================== BLOCS DIAGRAMA ===================== */
