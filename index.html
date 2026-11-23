@@ -33,6 +33,11 @@ section.tab.on{display:flex;gap:16px}
 .tools{display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
 section.tab.wide .side{display:none}
 .sidetg{margin-left:6px}
+.fsbtn{background:#111;color:#fff;border-color:#111}
+.fsbtn:hover{background:var(--or);color:#111;border-color:var(--or)}
+@keyframes blinkfs{0%,100%{background:#111;color:#fff;box-shadow:0 0 0 0 rgba(240,124,27,0)}50%{background:var(--or);color:#111;border-color:var(--or);box-shadow:0 0 0 6px rgba(240,124,27,.35)}}
+.fsbtn.blink{animation:blinkfs 1.6s ease-in-out 12}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:10px;font-size:16px;z-index:50;display:none;max-width:80vw}
 .chip{font:inherit;font-size:16px;font-weight:700;border:2px solid var(--ink);background:#fff;padding:4px 12px;border-radius:8px;cursor:pointer}
 .chip.on{background:var(--or);border-color:var(--or);color:#111}
 .mapwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
@@ -153,7 +158,7 @@ svg.map.drag{cursor:grabbing}
         <button class="chip" id="tg-arrows">Moviment relatiu</button>
         <button class="chip" id="tg-reset">Treure la selecció</button>
         <button class="chip sidetg" data-sec="t-map">Amaga el quadre ▸</button>
-        <span class="zoom" data-map="map1"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span>
+        <span class="zoom" data-map="map1"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button><button class="chip fsbtn blink">⛶ Pantalla completa</button></span>
       </div>
       <div class="mapwrap"><svg class="map" id="map1"></svg></div>
       <div class="legend" id="legend1"></div>
@@ -182,13 +187,14 @@ svg.map.drag{cursor:grabbing}
     <div class="mapcol">
       <div class="tools"><span style="font-size:17px;font-weight:700">Clica un número del mapa.</span>
         <button class="chip sidetg" data-sec="t-ctx">Amaga el quadre ▸</button>
-        <span class="zoom" data-map="map2"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button></span></div>
+        <span class="zoom" data-map="map2"><button class="chip" data-z="in" title="Amplia">🔍+</button><button class="chip" data-z="out" title="Redueix">🔍−</button><button class="chip" data-z="all">Mapa sencer</button><button class="chip fsbtn blink">⛶ Pantalla completa</button></span></div>
       <div class="mapwrap"><svg class="map" id="map2"></svg></div>
       <div class="legend" id="legend2"></div>
     </div>
     <aside class="side fitxa" id="side2"></aside>
   </section>
 </main>
+<div class="toast" id="toast"></div>
 <footer>J Alcolea · Ins Júlia Minguell · Ciències de la Terra — Fonts: Tarbuck i Lutgens, <i>Ciencias de la Tierra</i>; límits i velocitats de placa: Bird, P. (2003), <i>An updated digital model of plate boundaries</i>, G³; costes: Natural Earth.</footer>
 </div>
 
@@ -495,6 +501,21 @@ function setSide(sec,show){
   const b=S.querySelector('.sidetg'); if(b) b.textContent= show? 'Amaga el quadre ▸' : '◂ Mostra el quadre';
 }
 document.querySelectorAll('.sidetg').forEach(b=>b.onclick=()=>setSide(b.dataset.sec, document.getElementById(b.dataset.sec).classList.contains('wide')));
+/* ===================== pantalla completa ===================== */
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',4500);}
+function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
+function updFs(){document.querySelectorAll('.fsbtn').forEach(b=>b.textContent=isFs()?'✕ Surt de pantalla completa':'⛶ Pantalla completa');}
+document.addEventListener('fullscreenchange',updFs); document.addEventListener('webkitfullscreenchange',updFs);
+document.querySelectorAll('.fsbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.fsbtn').forEach(x=>x.classList.remove('blink'));
+  try{
+    if(isFs()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
+    const el=document.documentElement, req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(!req) throw 0;
+    const p=req.call(el); if(p&&p.catch) p.catch(()=>toast('Aquesta pàgina no pot passar a pantalla completa aquí. Prem F11 o obre l\'app en una pestanya nova.'));
+  }catch(e){ toast('Aquesta pàgina no pot passar a pantalla completa aquí. Prem F11 o obre l\'app en una pestanya nova.'); }
+}));
+setTimeout(()=>document.querySelectorAll('.fsbtn').forEach(x=>x.classList.remove('blink')),20000);
 /* ===================== pestanyes ===================== */
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function showTab(id){
@@ -1142,7 +1163,7 @@ side2.innerHTML=CTXINTRO;
 const M2=drawMap(document.getElementById('map2'),{labels:true,arrows:false});
 legend(document.getElementById('legend2'));
 ZOOMS.map1=enableZoom(document.getElementById('map1')); ZOOMS.map2=enableZoom(document.getElementById('map2'));
-document.querySelectorAll('.zoom').forEach(z=>z.querySelectorAll('button').forEach(b=>b.onclick=()=>ZOOMS[z.dataset.map][b.dataset.z]()));
+document.querySelectorAll('.zoom').forEach(z=>z.querySelectorAll('button[data-z]').forEach(b=>b.onclick=()=>ZOOMS[z.dataset.map][b.dataset.z]()));
 const ctxEls={};
 for(const c of CTX){
   const [x,y]=proj(c.lon,c.lat);
