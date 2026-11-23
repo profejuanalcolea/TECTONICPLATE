@@ -135,6 +135,9 @@ svg.map.drag{cursor:grabbing}
 .fitxa dt{font-weight:800;margin-top:9px;font-size:15.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--or)}
 .fitxa dd{margin:1px 0 0}
 .ctxfig{margin:6px 0 10px}
+.ctxtop{display:flex;align-items:center;gap:10px}
+.backbtn{font:inherit;font-size:20px;font-weight:800;width:38px;height:34px;border:2px solid #111;border-radius:8px;background:#fff;cursor:pointer;line-height:1;padding:0}
+.backbtn:hover{background:var(--or);border-color:var(--or)}
 .ctxmap{width:100%;border:2px solid #111;border-radius:8px;cursor:zoom-in;display:block}
 .ctxfig figcaption{font-size:13px;color:#555;margin-top:3px}
 #imgzoom{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:100;cursor:zoom-out}
@@ -1185,7 +1188,7 @@ function showCtx(n){
   const c=CTX.find(x=>x.n===n);
   Object.values(ctxEls).forEach(e=>e.classList.remove('sel')); ctxEls[n].classList.add('sel');
   const btns=[c.model,c.model2].filter(Boolean).map(m=>`<button class="btn" onclick="goBlock('${m}')">Model: ${MODELNAME[m]} →</button>`).join(' ');
-  side2.innerHTML=`<div class="kicker">Context ${c.n}</div><h2>${c.t}</h2>
+  side2.innerHTML=`<div class="ctxtop"><button class="backbtn" onclick="ctxBack()" title="Tots els contextos" aria-label="Tots els contextos">←</button><span class="kicker">Context ${c.n}</span></div><h2>${c.t}</h2>
   ${c.map&&MAPIMG[c.map]?`<figure class="ctxfig"><img class="ctxmap" src="${MAPIMG[c.map]}" alt="Mapa de la zona: ${c.t}" onclick="zoomImg(this.src)"><figcaption>Clica el mapa per ampliar-lo</figcaption></figure>`:''}<dl>
   <dt>Situació</dt><dd>${c.sit}</dd>
   <dt>Plaques</dt><dd>${c.pl}</dd>
@@ -1195,8 +1198,7 @@ function showCtx(n){
   <dt>Magmatisme</dt><dd>${c.mag}</dd>
   <dt>Sismicitat</dt><dd>${c.sis}</dd></dl>
   ${c.nota?`<div class="note">${c.nota}</div>`:''}
-  ${btns}
-  <p><a href="#" onclick="side2.innerHTML=CTXINTRO;Object.values(ctxEls).forEach(e=>e.classList.remove('sel'));return false;">← Tots els contextos</a></p>`;
+  ${btns}`;
 }
 
 function zoomImg(src){
@@ -1207,6 +1209,8 @@ function zoomImg(src){
   o.querySelector('img').src=src; o.style.display='flex';
 }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){const o=document.getElementById('imgzoom'); if(o) o.style.display='none';} });
+
+function ctxBack(){ side2.innerHTML=CTXINTRO; Object.values(ctxEls).forEach(e=>e.classList.remove('sel')); }
 
 </script>
 </body>
